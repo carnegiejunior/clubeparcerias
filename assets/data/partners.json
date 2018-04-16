@@ -1,0 +1,30 @@
+{
+        "root": [
+                {
+                        "idTipo": 21,
+                        "nomeTipo": "Cursos de Idiomas",
+                        "idSuperTipo": 1,
+                        "nomeSuperTipo": "Educação",
+                        "nome": "La Belle Écolle.",
+                        "ramo": "Ensino do Idioma Francês;Instrução, treinamento, orientação pedagógica e educacional, avaliação de conhecimentos da língua francesa.",
+                        "produtoServico": "Francês Níveis Sequenciais Semestral; Francês Semi-Intensivos; Francês de Férias; Francês Instrumental; Curso de Francês para Crianças; Curso de Gramatica.",
+                        "endereco": "Av. Jornalista Miécio Jorge nº9; Edifício Carrara, Sala 506 e 507, Bairro: Jardim Renascença; CEP:65.075-660.",
+                        "contato": "(98) 99140-1200 (VIVO) Whatsapp (98) 98886-7608 (OI)",
+                        "email": " a.belle.ecole@gmail.com ",
+                        "desconto": "10% em qualquer forma de pagamento."
+                },
+                {
+                        "idTipo": 21,
+                        "nomeTipo": "Cursos de Idiomas",
+                        "idSuperTipo": 1,
+                        "nomeSuperTipo": "Educação",
+                        "nome": "Wizard São Luís.",
+                        "ramo": "Educação.",
+                        "produtoServico": "Cursos de Inglês, Francês e Espanhol.",
+                        "endereco": "Rua Domingos Barbosa, nº 16, Qd 7  Cohama; Avenida dos Holandeses, nº 15, Qd 9  Calhau; Rua Padre Antônio Vieira, nº 43, Qd 26  Cohab Anil IV. ",
+                        "contato": "Cohama - 3256-3535 Calhau - 3235-3535 Cohab - 3303-8363 ",
+                        "email": "marketing@wizardslz.com.br ",
+                        "desconto": "15% nas parcelas dos cursos."
+                }
+       ]
+}
