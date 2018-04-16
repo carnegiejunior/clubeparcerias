@@ -36,11 +36,3 @@ class PartnerModel{
     this.partnerIdType,
     });
 }
-
-//List<PartnerModel> partnerData = List.castFrom( loadPartnerData().whenComplete();
-
-// [
-
-// new PartnerModel(),
-
-// ];
