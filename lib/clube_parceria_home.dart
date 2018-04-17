@@ -1,5 +1,8 @@
 //import 'package:clube_parceria_tre_ma/pages/parceiros_screen.dart';
 //import 'package:clube_parceria_tre_ma/pages/sobre_screen.dart';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class ClubeParceriaHome extends StatefulWidget {
@@ -8,63 +11,33 @@ class ClubeParceriaHome extends StatefulWidget {
 }
 
 class _ClubeParceriaHomeState extends State<ClubeParceriaHome>
-  with SingleTickerProviderStateMixin {
-  TabController _tabController;
+    with SingleTickerProviderStateMixin {
+
+  var cachedData = new Map<int, Data>();
+  var offsetLoaded = new Map<int, bool>();
+  int _total = 0;
 
   @override
   void initState() {
+    _getTotal().then((int total) {
+      setState(() {
+        _total = total;
+      });
+    });
     super.initState();
-    this._tabController =
-        new TabController(vsync: this, initialIndex: 0, length: 2);
   }
 
   @override
   Widget build(BuildContext context) {
-  /*     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Clube de Parcerias TRE-MA'),
-          elevation: 0.7,
-          bottom: new TabBar(
-            controller: this._tabController,
-            indicatorColor: Colors.white,
-            tabs: <Widget>[
-              new Tab(text: "PARCEIROS",),
-              new Tab(text: "SOBRE"),
-            ],
-          ),
-          actions: <Widget>[ new IconButton(icon: new Icon(Icons.more_vert),onPressed: null,),
-            new Padding(padding: const EdgeInsets.symmetric(horizontal: 5.0),),
-            new Icon(Icons.more_vert),],
-        ),
-
-        body: new TabBarView(
-          controller: this._tabController,
-          children: <Widget>[
-              new ParceirosScreen(),
-              new SobreScreen(),
-          ],
-          
-        ),
-        floatingActionButton: new FloatingActionButton(
-            backgroundColor: Theme.of(context).accentColor,
-            child: new Icon(Icons.system_update_alt),
-            onPressed: ()=>print('Atualizar lista'),
-          )
-      );
-    } */
-
-
-    var _itemCount = 3;
-
-    var listview = new ListView.builder(
-      itemCount: _itemCount,
-      itemBuilder: (BuildContext context, int index){
+    var listView = new ListView.builder(
+        itemCount: _total,
+        itemBuilder: (BuildContext context, int index) {
+        Data data = _getData(index);
         return new ListTile(
-          title: new Text("Item"),
+          title: new Text(data.value),
         );
       },
     );
-
 
     return new Scaffold(
       appBar: new AppBar(
@@ -72,18 +45,104 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome>
         elevation: 4.0,
         centerTitle: true,
         actions: <Widget>[
-                           new IconButton(
-                             icon: new Icon(Icons.more_vert),
-                             onPressed: ()=>{},
-                            ),
-                          ],
+          new IconButton(
+            icon: new Icon(Icons.more_vert),
+            onPressed: () => {},
+          ),
+        ],
       ),
-      body: listview,
+
+      body: listView,
+
       floatingActionButton: new FloatingActionButton(
-          backgroundColor: Theme.of(context).accentColor,
-          child: new Icon(Icons.system_update_alt),
-          onPressed: ()=>print('Atualizar lista'),
+        backgroundColor: Theme
+            .of(context)
+            .accentColor,
+        child: new Icon(Icons.system_update_alt),
+        onPressed: () => print('Atualizar lista'),
       ),
     );
   }
+
+  Future<List<Data>> _getDatas(int offset, int limit) async {
+    String jsonString = await _getJson(offset, limit);
+    //List<Map> list = json.decode(jsonString).cast<Map>();
+    List list = json.decode(jsonString) as List;
+
+    var datas = new List<Data>();
+
+
+//    list.forEach((Map map) => datas.add(new Data.fromMap(map)));
+    //list.forEach((element) => datas.add(new Data.fromMap(element as Map)));
+    list.forEach((element){
+      Map map = element as Map;
+      datas.add(new Data.fromMap(map));
+    });
+    return datas;
+  }
+
+
+  Future<String> _getJson(int offset, int limit) async {
+    String jsonString = "[";
+    for (int i = offset; i < offset + limit; i++) {
+      String id = i.toString();
+      String value = "Value($id)";
+      jsonString += '{"id":"$id","value":"$value"}';
+      if (i < offset + limit - 1) {
+        jsonString += ',';
+      }
+    }
+    jsonString += "]";
+
+//    await new Future.delayed(new Duration(seconds: 3));
+
+    return jsonString;
+  }
+
+  Data _getData(int index) {
+    Data data = cachedData[index];
+    if (data == null) {
+      int offset = index ~/ 5 * 5;
+
+      if (!offsetLoaded.containsKey(offset)) {
+        offsetLoaded.putIfAbsent(offset, () => true);
+        _getDatas(offset, 5)
+            .then((List<Data> datas) => _updateDatas(offset, datas));
+      }
+      data = new Data.loading();
+    }
+    return data;
+  }
+
+  Future<int> _getTotal() async {
+    return 1000;
+  }
+
+  void _updateDatas(int offset, List<Data> datas) {
+    setState(() {
+      for (int i = 0; i < datas.length; i++) {
+        cachedData.putIfAbsent(offset + i, () => datas[i]);
+      }
+    });
+  }
+
+
+//Simple model called Data
 }
+
+class Data {
+
+  String id;
+  String value;
+
+  Data.loading(){
+    value = "Loading...";
+  }
+
+  Data.fromMap(Map map){
+    id = map['id'];
+    value = map['value'];
+  }
+
+}
+

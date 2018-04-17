@@ -4,15 +4,11 @@ import 'package:flutter/material.dart';
 
 void main(){
     runApp(new MyApp());
-    loadPartnerData();
 }
 
-
 class MyApp extends StatelessWidget{
-  
   @override
   Widget build(BuildContext context){
-    
     return new MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Clube de Parcerias',
@@ -21,9 +17,6 @@ class MyApp extends StatelessWidget{
           accentColor: new Color(0xff25D366),
         ),
         home: new ClubeParceriaHome(),
-
     );
   }
 }
-
-
