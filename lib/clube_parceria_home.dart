@@ -3,7 +3,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:clube_parceria_tre_ma/models/parceiro_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class ClubeParceriaHome extends StatefulWidget {
   @override
@@ -12,8 +14,7 @@ class ClubeParceriaHome extends StatefulWidget {
 
 class _ClubeParceriaHomeState extends State<ClubeParceriaHome>
     with SingleTickerProviderStateMixin {
-
-  var cachedData = new Map<int, Data>();
+  var cachedPartnerModel = new Map<int, PartnerModel>();
   var offsetLoaded = new Map<int, bool>();
   int _total = 0;
 
@@ -29,120 +30,204 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome>
 
   @override
   Widget build(BuildContext context) {
+    //TextStyle textStyle = Theme.of(context).textTheme.display1;
+
     var listView = new ListView.builder(
-        itemCount: _total,
-        itemBuilder: (BuildContext context, int index) {
-        Data data = _getData(index);
+      padding: EdgeInsets.symmetric(vertical: 18.0),
+      itemCount: _total,
+      itemBuilder: (BuildContext context, int index) {
+
+        PartnerModel partnerModel = _getPartnerModel(index);
+
         return new ListTile(
-          title: new Text(data.value),
-        );
+            //onTap: null,
+            isThreeLine: false,
+            leading: new CircleAvatar(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.grey,
+              child: new Icon(Icons.filter),
+              //child: new Image(image: new AssetImage(product.avatarImage)),
+            ),
+            title: new Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Expanded(
+                  child: new Text(
+                    partnerModel.partnerName,
+                    style: new TextStyle(
+                      fontSize: 14.0,
+                    ),
+                    textScaleFactor: 0.9,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ],
+            ),
+            subtitle: new Text(
+              partnerModel.partnerActivity,
+              style: new TextStyle(
+                fontSize: 10.0,
+              ),
+            ));
       },
     );
 
     return new Scaffold(
+      drawer: new Drawer(
+        child: new ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            new DrawerHeader(
+              child: new Center(
+                  child: new Text(
+                'Clube de parcerias - TRE-MA',
+                style: new TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              )),
+              decoration: new BoxDecoration(
+                color: Colors.green,
+                gradient: new LinearGradient(colors: [
+                  Colors.green,
+                  Colors.lightGreen,
+                  Colors.lightGreenAccent,
+                ]),
+                //image: new DecorationImage(image: new AssetImage("")),
+              ),
+            ),
+            new ListTile(
+              leading: new Icon(Icons.toc),
+              title: new Text('Configurações'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            new ListTile(
+              leading: new Icon(Icons.help_outline),
+              title: new Text('Sobre o TRE-MA'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
       appBar: new AppBar(
         title: new Text('Clube de Parcerias'),
         elevation: 4.0,
         centerTitle: true,
         actions: <Widget>[
           new IconButton(
-            icon: new Icon(Icons.more_vert),
-            onPressed: () => {},
+            icon: new Icon(Icons.filter_list),
+            onPressed: (){_ordenar(context);} ,
           ),
         ],
       ),
-
       body: listView,
-
       floatingActionButton: new FloatingActionButton(
-        backgroundColor: Theme
-            .of(context)
-            .accentColor,
-        child: new Icon(Icons.system_update_alt),
+        backgroundColor: Theme.of(context).accentColor,
+        foregroundColor: Color(0xFFFFFFFF),
+        child: new Icon(Icons.cached),
         onPressed: () => print('Atualizar lista'),
       ),
     );
   }
 
-  Future<List<Data>> _getDatas(int offset, int limit) async {
+  Future<List<PartnerModel>> _getPartnerModels(int offset, int limit) async {
     String jsonString = await _getJson(offset, limit);
-    //List<Map> list = json.decode(jsonString).cast<Map>();
-    List list = json.decode(jsonString) as List;
-
-    var datas = new List<Data>();
-
-
-//    list.forEach((Map map) => datas.add(new Data.fromMap(map)));
-    //list.forEach((element) => datas.add(new Data.fromMap(element as Map)));
-    list.forEach((element){
-      Map map = element as Map;
-      datas.add(new Data.fromMap(map));
-    });
-    return datas;
+    List<Map> list = json.decode(jsonString).cast<Map>();
+    List<PartnerModel> partnerModels = new List<PartnerModel>();
+    list.forEach(
+        (element) => partnerModels.add(new PartnerModel.fromMap(element)));
+    return partnerModels;
   }
-
 
   Future<String> _getJson(int offset, int limit) async {
-    String jsonString = "[";
-    for (int i = offset; i < offset + limit; i++) {
-      String id = i.toString();
-      String value = "Value($id)";
-      jsonString += '{"id":"$id","value":"$value"}';
-      if (i < offset + limit - 1) {
-        jsonString += ',';
-      }
-    }
-    jsonString += "]";
-
-//    await new Future.delayed(new Duration(seconds: 3));
-
-    return jsonString;
+    return rootBundle.loadString('assets/data/partners.json');
   }
 
-  Data _getData(int index) {
-    Data data = cachedData[index];
-    if (data == null) {
+  PartnerModel _getPartnerModel(int index) {
+    PartnerModel partnerModel = cachedPartnerModel[index];
+    if (partnerModel == null) {
       int offset = index ~/ 5 * 5;
 
       if (!offsetLoaded.containsKey(offset)) {
         offsetLoaded.putIfAbsent(offset, () => true);
-        _getDatas(offset, 5)
-            .then((List<Data> datas) => _updateDatas(offset, datas));
+        _getPartnerModels(offset, 5).then((List<PartnerModel> partnerModels) =>
+            _updatePartnerModels(offset, partnerModels));
       }
-      data = new Data.loading();
+      partnerModel = new PartnerModel.loading();
     }
-    return data;
+    return partnerModel;
   }
 
   Future<int> _getTotal() async {
-    return 1000;
+    return 150;
   }
 
-  void _updateDatas(int offset, List<Data> datas) {
+  void _updatePartnerModels(int offset, List<PartnerModel> partnerModels) {
     setState(() {
-      for (int i = 0; i < datas.length; i++) {
-        cachedData.putIfAbsent(offset + i, () => datas[i]);
+      for (int i = 0; i < partnerModels.length; i++) {
+        cachedPartnerModel.putIfAbsent(offset + i, () => partnerModels[i]);
       }
     });
   }
 
 
-//Simple model called Data
-}
-
-class Data {
-
-  String id;
-  String value;
-
-  Data.loading(){
-    value = "Loading...";
+  Future<Null> _ordenar(BuildContext context) async {
+    return showDialog<Null>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text('Filtrar por'),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text('Nome.'),
+                new Text('Tipo de instituição.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  Data.fromMap(Map map){
-    id = map['id'];
-    value = map['value'];
+  void ordernar(BuildContext context) {
+    new AlertDialog(
+          title: new Text('Filtrar por'),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text('Nome.'),
+                new Text('Tipo de instituição.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text('CANCELAR'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
   }
-
 }
-

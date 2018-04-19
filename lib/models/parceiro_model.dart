@@ -7,18 +7,18 @@
 
 class PartnerModel{
 
-  final String partnerName;
-  final String partnerSupertype;
-  final String partnerType;
-  final String partnerAddress;
-  final String partnerProductService;
-  final String partnerActivity;
-  final String partnerEmail;
-  final String partnerContact;
-  final String partnerDiscount;
-  final String partnerLogo;
-  final int    partnerIdSuperType;
-  final int    partnerIdType;
+  String partnerName;
+  String partnerSupertype;
+  String partnerType;
+  String partnerAddress;
+  String partnerProductService;
+  String partnerActivity;
+  String partnerEmail;
+  String partnerContact;
+  String partnerDiscount;
+  String partnerLogo;
+  int    partnerIdSuperType;
+  int    partnerIdType;
 
 
   PartnerModel({ // Class' constructor
@@ -35,4 +35,24 @@ class PartnerModel{
     this.partnerIdSuperType,
     this.partnerIdType,
     });
+
+  PartnerModel.loading(){
+    this.partnerName = 'Carregando...';
+    this.partnerProductService = 'Carregando...';
+    this.partnerActivity = 'Carregando...';
+  }
+
+  PartnerModel.fromMap(Map map){
+    this.partnerIdType = map['idTipo'];
+    this.partnerIdSuperType = map['idSuperTipo'];
+    this.partnerType = map['nomeTipo'];
+    this.partnerName = map['nome'];
+    this.partnerAddress = map['endereco'];
+    this.partnerContact = map['contato'];
+    this.partnerEmail = map['email'];
+    this.partnerActivity = map['ramo'];
+    this.partnerSupertype = map['educacao'];
+    this.partnerDiscount = map['desconto'];
+    this.partnerProductService = map['produtoServico'];
+  }
 }

@@ -7,10 +7,13 @@ void main(){
 }
 
 class MyApp extends StatelessWidget{
+
+
   @override
   Widget build(BuildContext context){
     return new MaterialApp(
         debugShowCheckedModeBanner: false,
+
         title: 'Clube de Parcerias',
         theme: new ThemeData(
           primaryColor: new Color(0xff075E54),
