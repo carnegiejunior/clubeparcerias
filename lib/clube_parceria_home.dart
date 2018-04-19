@@ -198,7 +198,7 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome>
           ),
           actions: <Widget>[
             new FlatButton(
-              child: new Text('Cancelar'),
+              child: new Text('CANCELAR'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
