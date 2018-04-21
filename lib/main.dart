@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget{
 
         title: 'Clube de Parcerias',
         theme: new ThemeData(
-          primaryColor: new Color(0xff075E54),
+          primaryColor: new Color(0xff0d47a1),
           accentColor: new Color(0xff25D366),
         ),
         home: new ClubeParceriaHome(),

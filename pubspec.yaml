@@ -24,8 +24,6 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-  assets:
-   - assets/data/partners.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -37,6 +35,10 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.io/assets-and-images/#from-packages
+
+  assets:
+   - assets/data/partners.json
+   - assets/images/logo.png
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
