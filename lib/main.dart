@@ -1,5 +1,5 @@
 import 'package:clube_parceria_tre_ma/clube_parceria_home.dart';
-import 'package:clube_parceria_tre_ma/data/partner_data_parser.dart';
+import 'package:clube_parceria_tre_ma/models/clube_parceria_detalhes.dart';
 import 'package:flutter/material.dart';
 
 void main(){
@@ -13,13 +13,16 @@ class MyApp extends StatelessWidget{
   Widget build(BuildContext context){
     return new MaterialApp(
         debugShowCheckedModeBanner: false,
-
         title: 'Clube de Parcerias',
         theme: new ThemeData(
           primaryColor: new Color(0xff0d47a1),
           accentColor: new Color(0xff25D366),
+
         ),
         home: new ClubeParceriaHome(),
+      routes: <String,WidgetBuilder>{
+      ClubeParceriaDetalhes.routeName:(context)=>ClubeParceriaDetalhes(),
+      },
     );
   }
 }

@@ -54,5 +54,6 @@ class PartnerModel{
     this.partnerSupertype = map['educacao'];
     this.partnerDiscount = map['desconto'];
     this.partnerProductService = map['produtoServico'];
+    this.partnerLogo = map['image'];
   }
 }
