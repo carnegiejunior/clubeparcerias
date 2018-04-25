@@ -17,10 +17,37 @@ class ClubeParceriaDetalhes extends StatefulWidget {
 class _ClubeParceriaDetalhesState extends State<ClubeParceriaDetalhes> {
   @override
   Widget build(BuildContext context) {
+
     var _appBar = new AppBar(
       title: new Text('Detalhes do parceiro'),
       elevation: 4.0,
       centerTitle: true,
+    );
+
+    Widget addressSection = new Container(
+      padding: const EdgeInsets.only(left: 32.0,right: 32.0),
+      child: new Row(
+        children: <Widget>[
+          new Expanded(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Container(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: new Text(
+                    widget.partnerModel.partnerAddress,
+                    style: new TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontStyle: FontStyle.normal
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          new Divider(),
+        ],
+      ),
     );
 
     Widget titleSection = new Container(
@@ -37,25 +64,23 @@ class _ClubeParceriaDetalhesState extends State<ClubeParceriaDetalhes> {
                     widget.partnerModel.partnerName,
                     style: new TextStyle(
                       fontWeight: FontWeight.bold,
+                      fontSize:
                     ),
                   ),
                 ),
                 new Text(
-                  widget.partnerModel.partnerProductService,
-                  style: new TextStyle(
-                    color: Colors.grey[500],
-                  ),
+                  widget.partnerModel.partnerSupertype,
                 ),
               ],
             ),
           ),
+/*
           new Icon(
             Icons.star,
             color: Colors.red[500],
           ),
-          new Text('41'),
+*/
         ],
-        //new Text(widget.partnerModel.partnerName),
       ),
     );
 
@@ -93,9 +118,9 @@ class _ClubeParceriaDetalhesState extends State<ClubeParceriaDetalhes> {
       child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          buildButtonColumn(Icons.call, 'CALL'),
-          buildButtonColumn(Icons.near_me, 'ROUTE'),
-          buildButtonColumn(Icons.share, 'SHARE'),
+          buildButtonColumn(Icons.call, 'LIGAR'),
+          buildButtonColumn(Icons.near_me, 'ROTA'),
+          buildButtonColumn(Icons.share, 'COMPARTILHAR'),
         ],
       ),
     );
@@ -111,6 +136,7 @@ class _ClubeParceriaDetalhesState extends State<ClubeParceriaDetalhes> {
             height: 240.0,
           ),
           titleSection,
+          addressSection,
           buttonSection,
           textSection,
         ],

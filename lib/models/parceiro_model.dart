@@ -51,7 +51,7 @@ class PartnerModel{
     this.partnerContact = map['contato'];
     this.partnerEmail = map['email'];
     this.partnerActivity = map['ramo'];
-    this.partnerSupertype = map['educacao'];
+    this.partnerSupertype = map['nomeSuperTipo'];
     this.partnerDiscount = map['desconto'];
     this.partnerProductService = map['produtoServico'];
     this.partnerLogo = map['image'];

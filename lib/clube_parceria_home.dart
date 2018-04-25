@@ -113,7 +113,12 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
               onTap: () {
                 Navigator.push(
                   context,
-                  new MaterialPageRoute(builder: (context) => new ClubeParceriaDetalhes(partnerModel: partnerModel,)),
+                  new MaterialPageRoute(
+                      builder:
+                          (context) => new ClubeParceriaDetalhes(
+                            partnerModel: partnerModel,
+                          )
+                  ),
                 );
               },
               leading: new CircleAvatar(
