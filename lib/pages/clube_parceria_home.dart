@@ -1,17 +1,10 @@
-//import 'package:clube_parceria_tre_ma/pages/parceiros_screen.dart';
-//import 'package:clube_parceria_tre_ma/pages/sobre_screen.dart';
-
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
-
-import 'package:clube_parceria_tre_ma/models/clube_parceria_detalhes.dart';
-//import 'dart:io';
-//import 'package:flutter/rendering.dart';
-
+import 'package:clube_parceria_tre_ma/pages/clube_parceria_detalhes.dart';
 import 'package:clube_parceria_tre_ma/models/parceiro_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+//import 'package:material_search/material_search.dart';
 
 class ClubeParceriaHome extends StatefulWidget {
   @override
@@ -22,19 +15,10 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
   var cachedPartnerModel = new Map<int, PartnerModel>();
   var offsetLoaded = new Map<int, bool>();
 
-  //var _deviceConnected = false;
   int _total = 0;
-
-/*
-  void _setDeviceConnected(bool b){
-    setState(()=>this._deviceConnected = b);
-  }
-*/
 
   @override
   void initState() {
-    //_checkDeviceConnection().then((bool b)=>this._setDeviceConnected(b));
-
     _getTotal().then((int total) {
       setState(() {
         _total = total;
@@ -42,15 +26,6 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
     });
     super.initState();
   }
-
-/*  Future<bool> _checkDeviceConnection() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      return (result.isNotEmpty && result[0].rawAddress.isNotEmpty);
-    } on SocketException catch (_) {
-      ()=>debugPrint('Exception, trying connect with google.com');
-    }
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +54,7 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
     var _floatButtonIcon = new Icon(Icons.cached);
     var _floatingActionButton = new FloatingActionButton(
       onPressed: () {
+        print("teste");
         //this._checkDeviceConnection().then( (bool b) => print(b));
       },
       backgroundColor: _floatButtonBackgroundColor,
@@ -89,9 +65,7 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
     var _appBarActions = <Widget>[
       new IconButton(
         icon: new Icon(Icons.search),
-        onPressed: () {
-          _ordenar(context);
-        },
+        onPressed: () => print(context),
       ),
     ];
 
@@ -107,31 +81,25 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
         itemCount: _total,
         itemBuilder: (BuildContext context, int index) {
           PartnerModel partnerModel = _getPartnerModel(index);
-
           return new Card(
             child: new ListTile(
               onTap: () {
                 Navigator.push(
                   context,
-                  new MaterialPageRoute(
-                      builder:
-                          (context) => new ClubeParceriaDetalhes(
-                            partnerModel: partnerModel,
-                          )
-                  ),
+                  new MaterialPageRoute(builder: (context) => new ClubeParceriaDetalhes(partnerModel: partnerModel)),
                 );
               },
               leading: new CircleAvatar(
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.grey,
-                backgroundImage: MemoryImage(base64.decode(partnerModel?.partnerLogo??'')),
+                backgroundImage: MemoryImage(base64.decode(partnerModel?.partnerLogo ?? '')),
                 child: new Text('SI'),
               ),
               title: new Text(
-                partnerModel.partnerName,
+                partnerModel?.partnerName ?? 'Carregando...',
               ),
               subtitle: new Text(
-                partnerModel.partnerActivity,
+                partnerModel?.partnerSupertype ?? 'Carregando...',
               ),
             ),
           );
@@ -161,6 +129,7 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
 
   PartnerModel _getPartnerModel(int index) {
     PartnerModel partnerModel = cachedPartnerModel[index];
+
     if (partnerModel == null) {
       int offset = index ~/ 5 * 5;
 
@@ -169,6 +138,7 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
         _getPartnerModels(offset, 5)
             .then((List<PartnerModel> partnerModels) => _updatePartnerModels(offset, partnerModels));
       }
+
       partnerModel = new PartnerModel.loading();
     }
     return partnerModel;
@@ -184,36 +154,5 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
         cachedPartnerModel.putIfAbsent(offset + i, () => partnerModels[i]);
       }
     });
-  }
-
-  Future<Null> _ordenar(BuildContext context) async {
-    return showDialog<Null>(
-      context: context,
-      barrierDismissible: true, // user must tap button!
-      builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text('Filtrar por'),
-          content: new SingleChildScrollView(
-            child: new ListBody(
-              children: <Widget>[
-                new Text('Nome.'),
-                new Text('Tipo de instituição.'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text(
-                'CANCELAR',
-                style: new TextStyle(color: Colors.red),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

@@ -4,9 +4,7 @@
 
 //import 'package:clube_parceria_tre_ma/data/partner_data_parser.dart';
 
-
-class PartnerModel{
-
+class PartnerModel {
   String partnerName;
   String partnerSupertype;
   String partnerType;
@@ -17,11 +15,11 @@ class PartnerModel{
   String partnerContact;
   String partnerDiscount;
   String partnerLogo;
-  int    partnerIdSuperType;
-  int    partnerIdType;
+  int partnerIdSuperType;
+  int partnerIdType;
 
-
-  PartnerModel({ // Class' constructor
+  PartnerModel({
+    // Class' constructor
     this.partnerLogo,
     this.partnerName,
     this.partnerAddress,
@@ -34,15 +32,15 @@ class PartnerModel{
     this.partnerProductService,
     this.partnerIdSuperType,
     this.partnerIdType,
-    });
+  });
 
-  PartnerModel.loading(){
+  PartnerModel.loading() {
     this.partnerName = 'Carregando...';
     this.partnerProductService = 'Carregando...';
     this.partnerActivity = 'Carregando...';
   }
 
-  PartnerModel.fromMap(Map map){
+  PartnerModel.fromMap(Map map) {
     this.partnerIdType = map['idTipo'];
     this.partnerIdSuperType = map['idSuperTipo'];
     this.partnerType = map['nomeTipo'];
