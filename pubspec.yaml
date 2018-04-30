@@ -12,3 +12,5 @@ flutter:
   assets:
     - assets/data/partners.json
     - assets/images/logo.png
+    - assets/images/logo-tre-ma.png
+    - assets/images/service.png

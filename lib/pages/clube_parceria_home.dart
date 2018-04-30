@@ -12,8 +12,11 @@ class ClubeParceriaHome extends StatefulWidget {
 }
 
 class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTickerProviderStateMixin {
+
   var cachedPartnerModel = new Map<int, PartnerModel>();
   var offsetLoaded = new Map<int, bool>();
+
+  PartnerModel _partnerModel;
 
   int _total = 0;
 
@@ -29,6 +32,8 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
+
+/*
     var _drawerHeaderAssetImage = new AssetImage('assets/images/logo.png');
     var _drawerHeaderDecoration = new BoxDecoration(
       color: ThemeData.light().primaryColor,
@@ -48,10 +53,12 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
     var _drawer = new Drawer(
       child: _drawerListView,
     );
+*/
 
+/*
     var _floatButtonBackgroundColor = ThemeData.light().accentColor;
     var _floatButtonForegroundColor = new Color(0xFFFFFFFF);
-    var _floatButtonIcon = new Icon(Icons.cached);
+    var _floatButtonIcon = new Icon(Icons.search);
     var _floatingActionButton = new FloatingActionButton(
       onPressed: () {
         print("teste");
@@ -61,10 +68,15 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
       foregroundColor: _floatButtonForegroundColor,
       child: _floatButtonIcon,
     );
+*/
 
     var _appBarActions = <Widget>[
       new IconButton(
         icon: new Icon(Icons.search),
+        onPressed: () => print(context),
+      ),
+      new IconButton(
+        icon: new Icon(Icons.filter_list),
         onPressed: () => print(context),
       ),
     ];
@@ -72,45 +84,43 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
     var _appBar = new AppBar(
       title: new Text('Clube de Parcerias'),
       elevation: 4.0,
-      centerTitle: true,
+      centerTitle: false,
       actions: _appBarActions,
     );
 
     var listView = new ListView.builder(
         padding: EdgeInsets.symmetric(vertical: 18.0),
         itemCount: _total,
+
         itemBuilder: (BuildContext context, int index) {
-          PartnerModel partnerModel = _getPartnerModel(index);
+//          PartnerModel _partnerModel = _getPartnerModel(index);
+          _partnerModel = _getPartnerModel(index);
           return new Card(
             child: new ListTile(
               onTap: () {
                 Navigator.push(
                   context,
-                  new MaterialPageRoute(builder: (context) => new ClubeParceriaDetalhes(partnerModel: partnerModel)),
+                  new MaterialPageRoute(builder: (context) => new ClubeParceriaDetalhes(partnerModel: _partnerModel)),
                 );
               },
               leading: new CircleAvatar(
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.grey,
-                backgroundImage: MemoryImage(base64.decode(partnerModel?.partnerLogo ?? '')),
+                backgroundImage: MemoryImage(base64.decode(_partnerModel?.partnerLogo ?? '')),
                 child: new Text('SI'),
               ),
-              title: new Text(
-                partnerModel?.partnerName ?? 'Carregando...',
-              ),
-              subtitle: new Text(
-                partnerModel?.partnerSupertype ?? 'Carregando...',
-              ),
+              title: new Text(_partnerModel?.partnerName ?? 'Carregando...',),
+              subtitle: new Text(_partnerModel?.partnerSupertype ?? 'Carregando...',),
             ),
           );
         });
 
     return new Scaffold(
-      drawer: _drawer,
+      //drawer: _drawer,
       appBar: _appBar,
       backgroundColor: Color(0xFFFFFFFFFF),
       body: listView,
-      floatingActionButton: _floatingActionButton,
+  //    floatingActionButton: _floatingActionButton,
     );
   }
 
@@ -118,6 +128,10 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
   Future<List<PartnerModel>> _getPartnerModels(int offset, int limit) async {
     String jsonString = await _getJson(offset, limit);
     List<Map> list = await json.decode(jsonString).cast<Map>();
+
+    list.toList().sort((a,b)=>a.values. .compareTo(b.length));
+    print(list);
+
     List<PartnerModel> partnerModels = new List<PartnerModel>();
     list.forEach((element) => partnerModels.add(new PartnerModel.fromMap(element)));
     return partnerModels;
@@ -135,8 +149,8 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
 
       if (!offsetLoaded.containsKey(offset)) {
         offsetLoaded.putIfAbsent(offset, () => true);
-        _getPartnerModels(offset, 5)
-            .then((List<PartnerModel> partnerModels) => _updatePartnerModels(offset, partnerModels));
+        _getPartnerModels(offset, 5).then((List<PartnerModel> partnerModels) => _updatePartnerModels(offset,
+            partnerModels));
       }
 
       partnerModel = new PartnerModel.loading();
@@ -149,10 +163,17 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
   }
 
   void _updatePartnerModels(int offset, List<PartnerModel> partnerModels) {
+    //partnerModels.sort((a, b) => a.partnerName.compareTo(b.partnerName));
     setState(() {
       for (int i = 0; i < partnerModels.length; i++) {
         cachedPartnerModel.putIfAbsent(offset + i, () => partnerModels[i]);
       }
+      cachedPartnerModel.values.toList().sort((a, b) => a.partnerName.compareTo(b.partnerName));
     });
+
+    void _sortPartnerModel(){
+      this.cachedPartnerModel.values.toList().sort((a, b) => a.partnerName.compareTo(a.partnerName));
+      print(this.cachedPartnerModel.values.toList());
+    }
   }
 }

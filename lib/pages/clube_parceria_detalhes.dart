@@ -207,7 +207,9 @@ class _ClubeParceriaDetalhesState extends State<ClubeParceriaDetalhes> {
       ),
     );
 
+    final string = 'TRE-MA ';
     return new Scaffold(
+
       appBar: _appBar,
       backgroundColor: Color(0xFFFFFFFFFF),
       body: new ListView(
@@ -232,7 +234,12 @@ class _ClubeParceriaDetalhesState extends State<ClubeParceriaDetalhes> {
           phoneSection,
         ],
       ),
-      persistentFooterButtons: <Widget>[new Text('teste')],
+
+      persistentFooterButtons: <Widget>[
+        new Container(
+          child: new Text('TRE-MA, Abril de 2018',),
+        ),
+      ],
     );
   }
 }
