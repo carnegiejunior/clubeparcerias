@@ -1,12 +1,25 @@
 name: clube_parceria_tre_ma
+
+
 description: Clube de Parcerias TRE-MA.
+
 dependencies:
  flutter:
   sdk: flutter
  cupertino_icons: ^0.1.1
+ material_search: ^0.2.4
+
+# flutter_launcher_icons: ^0.3.2
+
+#flutter_icons:
+#  image_path: "icon/icon.png"
+#  android: true
+#  ios: true
+
 dev_dependencies:
   flutter_test:
    sdk: flutter
+
 flutter:
   uses-material-design: true
   assets:

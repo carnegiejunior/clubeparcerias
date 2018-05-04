@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:clube_parceria_tre_ma/pages/clube_parceria_detalhes.dart';
 import 'package:clube_parceria_tre_ma/models/parceiro_model.dart';
+import 'package:clube_parceria_tre_ma/pages/clube_parceria_localizar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-//import 'package:material_search/material_search.dart';
 
 class ClubeParceriaHome extends StatefulWidget {
   @override
@@ -12,73 +12,45 @@ class ClubeParceriaHome extends StatefulWidget {
 }
 
 class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTickerProviderStateMixin {
-
-  var cachedPartnerModel = new Map<int, PartnerModel>();
-  var offsetLoaded = new Map<int, bool>();
-
-  PartnerModel _partnerModel;
-
-  int _total = 0;
+  bool _reversedList = false;
 
   @override
   void initState() {
-    _getTotal().then((int total) {
-      setState(() {
-        _total = total;
-      });
-    });
     super.initState();
+  }
+
+  Future<List<PartnerModel>> _getPartnersList() async {
+    String jsonString = await rootBundle.loadString('assets/data/partners.json');
+    List<Map> list = await json.decode(jsonString).cast<Map>();
+    List<PartnerModel> partnerModels = new List<PartnerModel>();
+    list.forEach((element) => partnerModels.add(new PartnerModel.fromMap(element)));
+    return partnerModels;
   }
 
   @override
   Widget build(BuildContext context) {
 
-/*
-    var _drawerHeaderAssetImage = new AssetImage('assets/images/logo.png');
-    var _drawerHeaderDecoration = new BoxDecoration(
-      color: ThemeData.light().primaryColor,
-    );
-    var _drawerHeaderChildContainerImage = new Container(
-      child: new Center(child: new Image(image: _drawerHeaderAssetImage)),
-    );
+    List<PartnerModel> partnerModelList;
 
-    //var listDrawerHeader = new ListView(children: <Widget>[],);
-    var _drawerHeader = new DrawerHeader(
-      child: _drawerHeaderChildContainerImage,
-      decoration: _drawerHeaderDecoration,
-    );
-
-    var _drawerChildren = [_drawerHeader];
-    var _drawerListView = new ListView(children: _drawerChildren);
-    var _drawer = new Drawer(
-      child: _drawerListView,
-    );
-*/
-
-/*
-    var _floatButtonBackgroundColor = ThemeData.light().accentColor;
-    var _floatButtonForegroundColor = new Color(0xFFFFFFFF);
-    var _floatButtonIcon = new Icon(Icons.search);
-    var _floatingActionButton = new FloatingActionButton(
-      onPressed: () {
-        print("teste");
-        //this._checkDeviceConnection().then( (bool b) => print(b));
-      },
-      backgroundColor: _floatButtonBackgroundColor,
-      foregroundColor: _floatButtonForegroundColor,
-      child: _floatButtonIcon,
-    );
-*/
+    /_getPartnersList().then((lpm)=>lpm.forEach((pm)=>partnerModelList.add(pm)));
 
     var _appBarActions = <Widget>[
       new IconButton(
         icon: new Icon(Icons.search),
-        onPressed: () => print(context),
+        onPressed: () {
+          Navigator.push(
+            context,
+            new MaterialPageRoute(
+                builder: (context) => new ClubeParceriaLocalizar(partnerModels: partnerModelList)),
+          );
+        },
       ),
+/*
       new IconButton(
-        icon: new Icon(Icons.filter_list),
-        onPressed: () => print(context),
+          icon:  this._reversedList ? new Icon(Icons.arrow_downward) : new Icon(Icons.arrow_upward),
+          onPressed:()=>setState(() => this._reversedList = !this._reversedList)
       ),
+*/
     ];
 
     var _appBar = new AppBar(
@@ -88,92 +60,81 @@ class _ClubeParceriaHomeState extends State<ClubeParceriaHome> with SingleTicker
       actions: _appBarActions,
     );
 
-    var listView = new ListView.builder(
-        padding: EdgeInsets.symmetric(vertical: 18.0),
-        itemCount: _total,
-
-        itemBuilder: (BuildContext context, int index) {
-//          PartnerModel _partnerModel = _getPartnerModel(index);
-          _partnerModel = _getPartnerModel(index);
-          return new Card(
-            child: new ListTile(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(builder: (context) => new ClubeParceriaDetalhes(partnerModel: _partnerModel)),
-                );
-              },
-              leading: new CircleAvatar(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.grey,
-                backgroundImage: MemoryImage(base64.decode(_partnerModel?.partnerLogo ?? '')),
-                child: new Text('SI'),
+    var futureBuilder = new FutureBuilder(
+      future: _getPartnersList(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.waiting:
+            return new Center(
+              child: new Row(
+                //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  new CircularProgressIndicator(
+                    backgroundColor: Colors.white70,
+                  ),
+                  new Text('Carregando...'),
+                ],
               ),
-              title: new Text(_partnerModel?.partnerName ?? 'Carregando...',),
-              subtitle: new Text(_partnerModel?.partnerSupertype ?? 'Carregando...',),
-            ),
-          );
-        });
+            );
+          default:
+            if (snapshot.hasError) {
+              return new Text('Error: ${snapshot.error}');
+            } else {
+              return createListView(context, snapshot, this._reversedList);
+            }
+        }
+      },
+    );
 
     return new Scaffold(
       //drawer: _drawer,
       appBar: _appBar,
       backgroundColor: Color(0xFFFFFFFFFF),
-      body: listView,
-  //    floatingActionButton: _floatingActionButton,
+      //body: listView,
+      body: futureBuilder,
+      //    floatingActionButton: _floatingActionButton,
     );
   }
+}
 
-  // Methods
-  Future<List<PartnerModel>> _getPartnerModels(int offset, int limit) async {
-    String jsonString = await _getJson(offset, limit);
-    List<Map> list = await json.decode(jsonString).cast<Map>();
+Widget createListView(BuildContext context, AsyncSnapshot<List<PartnerModel>> snapshot, [bool reversed = false]) {
+  List<PartnerModel> partnerModels = snapshot.data;
 
-    list.toList().sort((a,b)=>a.values. .compareTo(b.length));
-    print(list);
-
-    List<PartnerModel> partnerModels = new List<PartnerModel>();
-    list.forEach((element) => partnerModels.add(new PartnerModel.fromMap(element)));
-    return partnerModels;
+  if (!reversed) {
+    partnerModels.sort((a, b) => a.partnerName.trim().compareTo(b.partnerName.trim()));
+  } else {
+    partnerModels.sort((a, b) => b.partnerName.trim().toLowerCase().compareTo(a.partnerName.trim().toLowerCase()));
   }
 
-  Future<String> _getJson(int offset, int limit) async {
-    return rootBundle.loadString('assets/data/partners.json');
-  }
-
-  PartnerModel _getPartnerModel(int index) {
-    PartnerModel partnerModel = cachedPartnerModel[index];
-
-    if (partnerModel == null) {
-      int offset = index ~/ 5 * 5;
-
-      if (!offsetLoaded.containsKey(offset)) {
-        offsetLoaded.putIfAbsent(offset, () => true);
-        _getPartnerModels(offset, 5).then((List<PartnerModel> partnerModels) => _updatePartnerModels(offset,
-            partnerModels));
-      }
-
-      partnerModel = new PartnerModel.loading();
-    }
-    return partnerModel;
-  }
-
-  Future<int> _getTotal() async {
-    return 150;
-  }
-
-  void _updatePartnerModels(int offset, List<PartnerModel> partnerModels) {
-    //partnerModels.sort((a, b) => a.partnerName.compareTo(b.partnerName));
-    setState(() {
-      for (int i = 0; i < partnerModels.length; i++) {
-        cachedPartnerModel.putIfAbsent(offset + i, () => partnerModels[i]);
-      }
-      cachedPartnerModel.values.toList().sort((a, b) => a.partnerName.compareTo(b.partnerName));
-    });
-
-    void _sortPartnerModel(){
-      this.cachedPartnerModel.values.toList().sort((a, b) => a.partnerName.compareTo(a.partnerName));
-      print(this.cachedPartnerModel.values.toList());
-    }
-  }
+  return new ListView.builder(
+    itemCount: partnerModels.length,
+    itemBuilder: (BuildContext context, int index) {
+      return new Card(
+        child: new ListTile(
+          onTap: () {
+            Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (context) => new ClubeParceriaDetalhes(partnerModel: partnerModels[index])),
+            );
+          },
+          leading: new CircleAvatar(
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.grey,
+            backgroundImage: MemoryImage(base64.decode(partnerModels[index]?.partnerLogo ?? '')),
+            child: new Text('SI'),
+          ),
+          title: new Text(
+            partnerModels[index]?.partnerName ?? 'Carregando...',
+          ),
+          subtitle: new Text(
+            partnerModels[index]?.partnerSupertype ?? 'Carregando...',
+          ),
+        ),
+      );
+    },
+  );
+  //values.length;
 }
