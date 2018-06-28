@@ -207,7 +207,7 @@ class _ClubeParceriaDetalhesState extends State<ClubeParceriaDetalhes> {
       ),
     );
 
-    final string = 'TRE-MA ';
+    //final string = 'TRE-MA ';
     return new Scaffold(
 
       appBar: _appBar,

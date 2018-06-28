@@ -3,20 +3,22 @@
 //import 'dart:async';
 
 //import 'package:clube_parceria_tre_ma/data/partner_data_parser.dart';
+import 'package:meta/meta.dart';
 
 class PartnerModel {
-  String partnerName;
+
+  @required String partnerName;
+  @required String partnerActivity;
+  @required int partnerIdType;
+  @required String partnerAddress;
   String partnerSupertype;
   String partnerType;
-  String partnerAddress;
   String partnerProductService;
-  String partnerActivity;
   String partnerEmail;
   String partnerContact;
   String partnerDiscount;
   String partnerLogo;
   int partnerIdSuperType;
-  int partnerIdType;
 
   PartnerModel({
     // Class' constructor
@@ -34,11 +36,11 @@ class PartnerModel {
     this.partnerIdType,
   });
 
-  PartnerModel.loading() {
-    this.partnerName = 'Carregando...';
-    this.partnerProductService = 'Carregando...';
-    this.partnerActivity = 'Carregando...';
-  }
+
+  PartnerModel.loading() :
+    partnerName = 'Carregando...',
+    partnerProductService = 'Carregando...',
+    partnerActivity = 'Carregando...';
 
   PartnerModel.fromMap(Map map) {
     this.partnerIdType = map['idTipo'];
@@ -54,4 +56,19 @@ class PartnerModel {
     this.partnerProductService = map['produtoServico'];
     this.partnerLogo = map['image'];
   }
+
+  PartnerModel.fromJson(Map json)  :
+      partnerName = json['nome'],
+      partnerIdType = json['idTipo'],
+      partnerIdSuperType = json['idSuperTipo'],
+      partnerType = json['nomeTipo'],
+      partnerAddress = json['endereco'],
+      partnerContact = json['contato'],
+      partnerEmail = json['email'],
+      partnerActivity = json['ramo'],
+      partnerSupertype = json['nomeSuperTipo'],
+      partnerDiscount = json['desconto'],
+      partnerProductService = json['produtoServico'],
+      partnerLogo = json['image'];
+
 }
